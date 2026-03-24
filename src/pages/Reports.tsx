@@ -260,9 +260,13 @@ export default function Reports() {
             <tbody className="divide-y divide-slate-100">
               {detailedStats.map((therapistStat, tIdx) => (
                 <React.Fragment key={tIdx}>
-                  {Object.values(therapistStat.patients as Record<string, PatientStats>).map((patientStat, pIdx) => (
+                  {Object.keys(therapistStat.patients).map((patientId, pIdx) => {
+                    const patientStat = therapistStat.patients[patientId];
+                    return (
                     <React.Fragment key={`${tIdx}-${pIdx}`}>
-                      {Object.values(patientStat.activities as Record<string, ActivityStats>).map((activityStat, aIdx) => (
+                      {Object.keys(patientStat.activities).map((activityType, aIdx) => {
+                        const activityStat = patientStat.activities[activityType];
+                        return (
                         <tr key={`${tIdx}-${pIdx}-${aIdx}`} className="hover:bg-slate-50 transition-colors">
                           <td className="p-4 font-medium text-slate-900">
                             {pIdx === 0 && aIdx === 0 ? therapistStat.therapistName : ''}
@@ -276,7 +280,8 @@ export default function Reports() {
                           <td className="p-4 text-right text-slate-600">{activityStat.hours.toFixed(1)} h</td>
                           <td className="p-4 text-right font-bold text-indigo-600">€{activityStat.cost.toFixed(2)}</td>
                         </tr>
-                      ))}
+                      );
+                      })}
                       {/* Subtotal for patient */}
                       <tr className="bg-slate-50/50 border-t border-slate-100">
                         <td colSpan={3} className="p-3 text-right text-sm font-medium text-slate-500">
@@ -286,7 +291,8 @@ export default function Reports() {
                         <td className="p-3 text-right text-sm font-bold text-slate-800">€{patientStat.totalCost.toFixed(2)}</td>
                       </tr>
                     </React.Fragment>
-                  ))}
+                    );
+                  })}
                   {/* Subtotal for therapist */}
                   <tr className="bg-indigo-50/50 border-t-2 border-indigo-100">
                     <td colSpan={3} className="p-4 text-right text-sm font-bold text-indigo-900">
