@@ -28,6 +28,26 @@ interface Therapist {
   name: string;
 }
 
+interface ActivityStats {
+  activityType: string;
+  cost: number;
+  hours: number;
+}
+
+interface PatientStats {
+  patientName: string;
+  totalCost: number;
+  totalHours: number;
+  activities: Record<string, ActivityStats>;
+}
+
+interface TherapistStats {
+  therapistName: string;
+  totalCost: number;
+  totalHours: number;
+  patients: Record<string, PatientStats>;
+}
+
 export default function Reports() {
   const { user, profile } = useAuth();
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -92,21 +112,7 @@ export default function Reports() {
 
   // Group by Therapist -> Patient -> Activity
   const detailedStats = useMemo(() => {
-    const stats: Record<string, {
-      therapistName: string;
-      totalCost: number;
-      totalHours: number;
-      patients: Record<string, {
-        patientName: string;
-        totalCost: number;
-        totalHours: number;
-        activities: Record<string, {
-          activityType: string;
-          cost: number;
-          hours: number;
-        }>
-      }>
-    }> = {};
+    const stats: Record<string, TherapistStats> = {};
 
     filteredSessions.forEach(s => {
       if (!stats[s.therapistId]) {
@@ -254,9 +260,9 @@ export default function Reports() {
             <tbody className="divide-y divide-slate-100">
               {detailedStats.map((therapistStat, tIdx) => (
                 <React.Fragment key={tIdx}>
-                  {Object.values(therapistStat.patients).map((patientStat, pIdx) => (
+                  {Object.values(therapistStat.patients as Record<string, PatientStats>).map((patientStat, pIdx) => (
                     <React.Fragment key={`${tIdx}-${pIdx}`}>
-                      {Object.values(patientStat.activities).map((activityStat, aIdx) => (
+                      {Object.values(patientStat.activities as Record<string, ActivityStats>).map((activityStat, aIdx) => (
                         <tr key={`${tIdx}-${pIdx}-${aIdx}`} className="hover:bg-slate-50 transition-colors">
                           <td className="p-4 font-medium text-slate-900">
                             {pIdx === 0 && aIdx === 0 ? therapistStat.therapistName : ''}
